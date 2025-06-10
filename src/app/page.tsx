@@ -168,7 +168,7 @@ export default function SanteNowLanding() {
             <div className="space-y-6">
               <h2 className="text-4xl font-bold text-gray-900">Bridging Healthcare Gaps</h2>
               <p className="text-lg text-gray-600 leading-relaxed">
-                In Haiti, access to quality healthcare remains a significant challenge. {Configs.appName} 
+                In Haiti, access to quality healthcare remains a significant challenge. {Configs.appName} {" "}
                 leverages artificial intelligence to provide immediate medical guidance, helping 
                 bridge the gap between patients and healthcare providers.
               </p>
