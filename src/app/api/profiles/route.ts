@@ -11,6 +11,7 @@ export async function POST() {
         data: {
           first_name: "God'sgift",
           last_name: "Uko",
+          name: "God'sgift Uko"
         },
       },
     });

@@ -94,7 +94,7 @@ export default function TerminateUserAccountPage({ params }: any) {
         <div className="text-center">
           <form onSubmit={handleDeleteUser}>
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              Delete User Account
+              Delete My Account
             </h3>
             <p className="text-sm text-gray-500 mb-6">
               Are you sure you want to delete{" "}
@@ -102,7 +102,7 @@ export default function TerminateUserAccountPage({ params }: any) {
                 {user!.first_name} {user!.last_name}
               </strong>
               ? This action cannot be undone and will permanently remove all
-              user data.
+              your data.
             </p>
             <textarea
               name="reasons"
@@ -159,7 +159,7 @@ export default function TerminateUserAccountPage({ params }: any) {
                     Deleting...
                   </>
                 ) : (
-                  "Delete User"
+                  "Delete Account"
                 )}
               </button>
             </div>
@@ -189,10 +189,10 @@ export default function TerminateUserAccountPage({ params }: any) {
             </svg>
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            User Deleted Successfully
+            Account Deleted Successfully
           </h2>
           <p className="text-gray-600 mb-6">
-            The user account has been permanently removed.
+            Your account has been permanently removed.
           </p>
           <button
             onClick={() => {
@@ -237,9 +237,9 @@ export default function TerminateUserAccountPage({ params }: any) {
             </svg>
             Back
           </button>
-          <h1 className="text-3xl font-bold text-gray-900">Delete User</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Delete Account</h1>
           <p className="mt-2 text-gray-600">
-            Review user information before proceeding with deletion.
+            Review your information before proceeding with deletion.
           </p>
         </div>
 
@@ -336,7 +336,7 @@ export default function TerminateUserAccountPage({ params }: any) {
                     </h3>
                     <div className="mt-2 text-sm text-red-700">
                       <p>
-                        This action will permanently delete the user account and
+                        This action will permanently delete your account and
                         cannot be undone. This includes:
                       </p>
                       <ul className="list-disc list-inside mt-2 space-y-1">
@@ -361,7 +361,7 @@ export default function TerminateUserAccountPage({ params }: any) {
                   onClick={() => setShowConfirmDialog(true)}
                   className="px-6 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                 >
-                  Delete User
+                  Delete Account
                 </button>
               </div>
             </>
