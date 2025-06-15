@@ -220,7 +220,7 @@ export default function TerminateUserAccountPage({ params }: any) {
               alert("Are you sure you want to cancel?");
               router.replace("/");
             }}
-            className="flex items-center text-sm text-gray-500 hover:text-gray-700 mb-4"
+            className="flex items-center text-sm text-gray-500 hover:text-gray-700 mb-4 cursor-pointer"
           >
             <svg
               className="w-4 h-4 mr-1"
