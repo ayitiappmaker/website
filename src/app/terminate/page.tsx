@@ -262,13 +262,13 @@ export default function DeleteAccountPage() {
 
             <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
               <p className="text-sm text-yellow-800">
-                <strong>Final confirmation required:</strong> Type "DELETE" below to permanently delete your account.
+                <strong>Final confirmation required:</strong> Type {"DELETE"} below to permanently delete your account.
               </p>
             </div>
 
             <div>
               <label htmlFor="confirmation" className="block text-sm font-medium text-gray-700 mb-2">
-                Type "DELETE" to confirm:
+                Type {"DELETE"} to confirm:
               </label>
               <input
                 type="text"
