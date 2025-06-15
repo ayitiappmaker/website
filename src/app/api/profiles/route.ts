@@ -132,9 +132,9 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   const { first_name, last_name, email, reason } = await request.json();
 
-  if (!first_name || !last_name || !email) {
+  if (!first_name || !email) {
     return NextResponse.json(
-      { error: "first_name, last_name, email & reason(optional) are required" },
+      { error: "first_name, email & reason(optional) are required" },
       { status: 500 }
     );
   }
