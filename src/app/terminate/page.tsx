@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import requestAccountDeletion from '@/libs/actions/user/request-account-deletion';
 import getUserByPhoneOrEmail from '@/libs/actions/user/get-user-by-phone-or-email';
@@ -14,7 +14,7 @@ export default function DeleteAccountPage() {
   const [error, setError] = useState('');
   const router = useRouter();
 
-  const handleVerificationSubmit = async (e) => {
+  const handleVerificationSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsProcessing(true);
     setError('');
