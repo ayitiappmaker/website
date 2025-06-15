@@ -12,5 +12,9 @@ export class String {
           .map(word => word.charAt(0).toUpperCase()) // Get first letter and uppercase
           .join('');
       }
+
+    static isEmail(identifier: string): boolean {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier);
+    }
       
 }

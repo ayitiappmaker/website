@@ -71,20 +71,42 @@ export async function DELETE(request: NextRequest) {
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const user_id = url.searchParams.get("id");
+  const phone = url.searchParams.get("phone");
+  const email = url.searchParams.get("email");
 
-  if (!user_id) {
-    return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+  const query = {
+    col: '',
+    val: '',
+  }
+
+  if (user_id) {
+    query.col = 'id';
+    query.val = user_id;
+  }
+
+  if (phone) {
+    query.col = 'phone';
+    query.val = phone;
+  }
+
+  if (email) {
+    query.col = 'email';
+    query.val = email;
+  }
+
+  if (!user_id && !phone && !email) {
+    return NextResponse.json({ error: "User ID OR Email OR Phone is required" }, { status: 400 });
   }
 
   try {
     const { error, data } = await supabase
       .from("profiles")
       .select("*")
-      .eq("id", user_id)
+      .eq(query.col, query.val)
       .single();
 
     if (!data) {
-      return NextResponse.json({ error: "Invalid User ID" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid Account" }, { status: 400 });
     }
 
     if (error) {
@@ -118,7 +140,7 @@ export async function PUT(request: NextRequest) {
   }
 
   try {
-    const { error } = await supabase.from("deleted_profiles").insert([
+    const { error } = await supabase.from("delete_account_requests").insert([
       {
         first_name,
         last_name,
@@ -137,6 +159,64 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ message: "Recorded!" }, { status: 200 });
   } catch (error) {
     console.error("Error recording deleted account:", error);
+    return NextResponse.json(
+      { error: "Something went wrong" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(request: NextRequest) {
+  const body = await request.json();
+
+  // if (!user_id) {
+  //   return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+  // }
+
+  try {
+    const query = {
+      col: body?.email ? 'email' : 'phone',
+      val: body?.email || body?.phone,
+    }
+    // const { error, data } = await createClient(
+    //   process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    //   process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY!
+    // ).auth.admin.getUserById(user_id);
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq(query.col, query.val)
+      .single();
+
+    if (!profile) {
+          return NextResponse.json(
+        { error: "Invalid Account" },
+        { status: 400 }
+      );
+    }
+
+    
+    const { error } = await supabase.from("delete_account_requests").insert([
+      {
+        first_name: profile?.first_name,
+        last_name: profile?.last_name,
+        email: profile?.email,
+        reason: profile?.reason,
+      },
+    ]);
+
+
+    if (error) {
+      return NextResponse.json(
+        { error: "Error requesting account deletion" },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ message: "Request submitted!" }, { status: 200 });
+  } catch (error) {
+    console.error("Error requesting account deletion:", error);
     return NextResponse.json(
       { error: "Something went wrong" },
       { status: 500 }

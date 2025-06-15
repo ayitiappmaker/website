@@ -5,16 +5,11 @@ import ProfileLoader from "@/components/ProfileLoader";
 import deleteUser from "@/libs/actions/user/delete-user";
 import getUser from "@/libs/actions/user/get-user";
 import recordDeletedUser from "@/libs/actions/user/record-deleted-user";
+import { User } from "@/types/entities";
 import { String } from "@/utils/string";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 
-type User = {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function TerminateUserAccountPage({ params }: any) {
