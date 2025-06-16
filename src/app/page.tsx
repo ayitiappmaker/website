@@ -1,9 +1,20 @@
+"use client";
+
 import React from 'react';
 import { Heart, Smartphone, Users, Globe, Shield, Zap } from 'lucide-react';
 import Moment from '@/utils/moment';
 import { Configs } from '@/configs';
 
 export default function SanteNowLanding() {
+  const apkUrl = '/downloads/santenow.apk';
+
+  const handleDownload = () => {
+    // Trigger download of the APK file
+    const link = document.createElement('a');
+    link.href = apkUrl;
+    link.download = 'santenow.apk'; // You can specify the filename if desired
+    link.click();
+  };
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
       {/* Navigation */}
@@ -40,9 +51,10 @@ export default function SanteNowLanding() {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <button className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2">
+              <button className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2 cursor-pointer" onClick={handleDownload}>
                 <Smartphone className="h-5 w-5" />
-                <span>Download App</span>
+                <span>Download apk</span>
+                {/* <span>Download App</span> */}
               </button>
               <button className="border-2 border-blue-600 text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
                 Learn More
@@ -211,9 +223,10 @@ export default function SanteNowLanding() {
             Join thousands of users who are already benefiting from AI-powered health diagnostics
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors flex items-center justify-center space-x-2">
+            <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors flex items-center justify-center space-x-2 cursor-pointer" onClick={handleDownload}>
               <Smartphone className="h-5 w-5" />
-              <span>Download Now</span>
+              <span>Download apk</span>
+              {/* <span>Download Now</span> */}
             </button>
             <button className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
               Contact Us
