@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const API_KEY = process.env.API_KEY // You should store this in .env
+const API_KEY = process.env.SANTENOW_API_KEY // You should store this in .env
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
