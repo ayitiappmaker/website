@@ -6,13 +6,13 @@ import Moment from '@/utils/moment';
 import { Configs } from '@/configs';
 
 export default function SanteNowLanding() {
-  const apkUrl = '/downloads/santenow.apk';
+  const apkUrl = 'https://expo.dev/artifacts/eas/bVUsBWeqDLERJomCPsZ6F1.apk';
 
   const handleDownload = () => {
     // Trigger download of the APK file
     const link = document.createElement('a');
     link.href = apkUrl;
-    link.download = 'santenow.apk'; // You can specify the filename if desired
+    link.download = 'bVUsBWeqDLERJomCPsZ6F1.apk'; // You can specify the filename if desired
     link.click();
   };
   return (
