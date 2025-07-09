@@ -1,5 +1,8 @@
+import { connectDB } from '@/libs/mongoose';
+import { ChatHistory } from '@/models/chat_history';
 import { getHealthPrompt } from '@/utils/ai_prompts';
 import OpenAI from 'openai';
+import { ChatCompletionMessageParam } from 'openai/resources';
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY!;
 
@@ -12,6 +15,8 @@ export async function GET(request: Request) {
   }
 
   try {
+    await connectDB();
+
     const { searchParams } = new URL(request.url);
     const message = searchParams.get('message');
     const locale = searchParams.get('locale') || 'ht';
@@ -32,23 +37,42 @@ export async function GET(request: Request) {
     const writer = writable.getWriter();
     const encoder = new TextEncoder();
 
+    
+
+    const history = await ChatHistory.find({});
+    const messages: Array<ChatCompletionMessageParam> = [];
+
+    for (const chat of history) {
+      messages.push({
+        role: chat.role,
+        content: chat.content,
+      });
+    }
+
+    if (!history.length) {
+      messages.push(
+        { role: 'system', content: getHealthPrompt(locale) },
+        { role: 'user', content: message },
+      );
+      await ChatHistory.insertMany(messages);
+    }
+
     // Start the streaming process
     (async () => {
       try {
         const stream = await openai.chat.completions.create({
           model: 'gpt-4',
-          messages: [
-            { role: 'system', content: getHealthPrompt(locale) },
-            { role: 'user', content: message }
-          ],
+          messages,
           temperature: 0.7,
           max_tokens: 1000,
           stream: true,
         });
 
+      let aiResponse = '';
+
         for await (const chunk of stream) {
           const content = chunk.choices?.[0]?.delta?.content || '';
-          
+          aiResponse += content;
           if (content) {
             const sseData = `data: ${JSON.stringify({
               type: 'chunk',
@@ -63,13 +87,21 @@ export async function GET(request: Request) {
             }
           }
         }
+
+        // console.log(messages);
+        console.log(aiResponse);
         
+        await ChatHistory.insertMany([
+          // { role: 'user', content: message },
+          { role: 'system', content: aiResponse }
+        ]);
+
         // Send completion signal
         const doneData = `data: ${JSON.stringify({
           type: 'done'
         })}\n\n`;
         
-        try {
+        try {          
           await writer.write(encoder.encode(doneData));
         } catch (writeError) {
           console.error('Write error on done:', writeError);

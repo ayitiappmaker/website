@@ -64,9 +64,6 @@ export default function SanteNowLanding() {
                 <AppleIcon className="h-5 w-5" />
                 <span>iOS not available</span>
               </button>
-              {/* <button className="border-2 border-blue-600 text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
-                Learn More
-              </button> */}
             </div>
 
             {/* Stats */}
@@ -84,6 +81,9 @@ export default function SanteNowLanding() {
                 <div className="text-gray-600">Available</div>
               </div>
             </div>
+             {/* <button className="border-2 border-blue-600 text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
+                Learn More
+              </button> */}
           </div>
 
           {/* Right Image */}
