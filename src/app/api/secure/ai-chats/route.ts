@@ -130,7 +130,7 @@ export async function GET(request: Request) {
 }
 
 // Handle preflight OPTIONS requests for CORS
-export async function OPTIONS(_request: Request) {
+export async function OPTIONS() {
   return new Response(null, {
     status: 200,
     headers: {
