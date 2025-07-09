@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Heart, Smartphone, Users, Globe, Shield, Zap } from 'lucide-react';
+import { Heart, Smartphone, Users, Globe, Shield, Zap, AppleIcon } from 'lucide-react';
 import Moment from '@/utils/moment';
 import { Configs } from '@/configs';
 
@@ -16,6 +16,11 @@ export default function SanteNowLanding() {
     link.download = appDownloadId + '.apk'; // You can specify the filename if desired
     link.click();
   };
+
+  const handleIosDownload = () => {
+    //
+  };
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
       {/* Navigation */}
@@ -54,11 +59,14 @@ export default function SanteNowLanding() {
               <button className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2 cursor-pointer" onClick={handleDownload}>
                 <Smartphone className="h-5 w-5" />
                 <span>Download apk</span>
-                {/* <span>Download App</span> */}
               </button>
-              <button className="border-2 border-blue-600 text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
+              <button disabled={false} className="bg-gray-300 text-white px-8 py-3 rounded-lg font-semibold cursor-no-drop transition-colors flex items-center justify-center space-x-2" onClick={handleIosDownload}>
+                <AppleIcon className="h-5 w-5" />
+                <span>iOS not available</span>
+              </button>
+              {/* <button className="border-2 border-blue-600 text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
                 Learn More
-              </button>
+              </button> */}
             </div>
 
             {/* Stats */}
