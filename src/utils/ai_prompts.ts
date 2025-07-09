@@ -107,10 +107,10 @@ export const healthPrompt: Array<{
 const findPrompt = (locale: string) => healthPrompt.find(itm => itm.locale === locale)
 
 export const getHealthPrompt = (locale: string) => {
-    if (!findPrompt(locale) || findPrompt('en')) {
-      return findPrompt('en')!.prompt;
+    if (findPrompt(locale)) {
+      return findPrompt(locale)!.prompt;
     }
-    return findPrompt(locale)!.prompt;
+    return findPrompt('en')!.prompt;
   };
 
 
