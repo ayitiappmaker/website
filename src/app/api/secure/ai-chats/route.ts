@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getWelcomeMessage } from "@/constants/translations";
 import { connectDB } from "@/libs/mongoose";
 import { supabase } from "@/libs/supabase/supabase";
@@ -11,24 +12,121 @@ import { ChatCompletionMessageParam } from "openai/resources";
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY!;
 
+// export async function GET(request: Request) {
+//   const { searchParams } = new URL(request.url);
+//   const locale = searchParams.get('locale') as Locale;
+//   const userId = getUserId(request);
+//   await connectDB();
+  
+//   const {
+//     data: { first_name },
+//   } = await supabase.from("profiles").select("*").eq("id", userId).single();
+
+//   const welcomeMessage = getWelcomeMessage(locale).replace('***', String.extractWord(`${first_name}`, 0));
+//   const history = await ChatHistory.find({ userId }).lean();
+
+//   if (history.length === 0) {
+//     await ChatHistory.insertOne({ role: "system", content: welcomeMessage, userId, locale });
+//     return Response.json({ status: "success", data: await ChatHistory.find({ userId }).lean() }, {
+//       status: 200,
+//       headers: {
+//         "Content-Type": "application/json",
+//         "Cache-Control": "no-cache",
+//         "Access-Control-Allow-Origin": "*",
+//       },
+//     });
+//   }
+//   return Response.json({ status: "success", data: history }, {
+//     status: 200,
+//       headers: {
+//         "Content-Type": "application/json",
+//         "Cache-Control": "no-cache",
+//         "Access-Control-Allow-Origin": "*",
+//       },
+//   });
+// }
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const locale = searchParams.get('locale') as Locale;
   const userId = getUserId(request);
-  await connectDB();
   
-  const {
-    data: { first_name },
-  } = await supabase.from("profiles").select("*").eq("id", userId).single();
+  // Set up SSE headers
+  const headers = new Headers({
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type, x-api-key, authorization',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+  });
 
-  const welcomeMessage = getWelcomeMessage(locale).replace('***', String.extractWord(`${first_name}`, 0));
-  const history = await ChatHistory.find({ userId }).lean();
+  // Create a readable stream
+  const stream = new ReadableStream({
+    start(controller) {
+      const sendEvent = (data: any) => {
+        controller.enqueue(`data: ${JSON.stringify(data)}\n\n`);
+      };
 
-  if (history.length === 0) {
-    await ChatHistory.insertOne({ role: "system", content: welcomeMessage, userId, locale });
-    return Response.json({ status: "success", data: await ChatHistory.find({ userId }).lean() });
-  }
-  return Response.json({ status: "success", data: history });
+      const processRequest = async () => {
+        try {
+          await connectDB();
+          
+          const { data: { first_name } } = await supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", userId)
+            .single();
+
+          const welcomeMessage = getWelcomeMessage(locale)
+            .replace('***', String.extractWord(`${first_name}`, 0));
+
+          const history = await ChatHistory.find({ userId }).lean();
+
+          if (history.length === 0) {
+            await ChatHistory.insertOne({ 
+              role: "system", 
+              content: welcomeMessage, 
+              userId, 
+              locale 
+            });
+            
+            const newHistory = await ChatHistory.find({ userId }).lean();
+            sendEvent({ 
+              status: "success", 
+              data: newHistory,
+              type: "initial_message" 
+            });
+          } else {
+            sendEvent({ 
+              status: "success", 
+              data: history,
+              type: "existing_history" 
+            });
+          }
+
+          // Optional: Send a completion event
+          sendEvent({ 
+            status: "complete", 
+            type: "stream_end" 
+          });
+
+        } catch (error: any) {
+          sendEvent({ 
+            status: "error", 
+            message: error.message,
+            type: "error" 
+          });
+        } finally {
+          // controller.close();
+        }
+      };
+
+      processRequest();
+    }
+  });
+
+  return new Response(stream, { headers });
 }
 
 export async function POST(request: Request) {
@@ -195,8 +293,8 @@ export async function OPTIONS() {
     status: 200,
     headers: {
       "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, x-api-key",
+      "Access-Control-Allow-Methods": "GET, OPTIONS, POST",
+      "Access-Control-Allow-Headers": "Content-Type, x-api-key, authorization",
     },
   });
 }
