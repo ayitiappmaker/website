@@ -6,7 +6,7 @@ import Moment from '@/utils/moment';
 import { Configs } from '@/configs';
 
 export default function SanteNowLanding() {
-  const appDownloadId = '5ostXka8mimiph5uMWBEud';
+  const appDownloadId = 'iGmeFdU9VZV7mixeaU6FzR';
   const apkUrl = `https://expo.dev/artifacts/eas/${appDownloadId}.apk`;
 
   const handleDownload = () => {
