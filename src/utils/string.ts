@@ -16,5 +16,10 @@ export class String {
     static isEmail(identifier: string): boolean {
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier);
     }
-      
+
+    static extractWord(str: string, position: number) {
+      if(!str) return '';
+      const _position = position <= -1 ? 0 : position; 
+      return str.trim().split(/\s+/)[_position]
+  }   
 }

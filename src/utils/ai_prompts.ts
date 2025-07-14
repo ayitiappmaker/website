@@ -111,7 +111,7 @@ export const getHealthPrompt = (locale: string) => {
       return findPrompt(locale)!.prompt;
     }
     return findPrompt('en')!.prompt;
-  };
+};
 
 
   // export const healthPrompt: Array<{
