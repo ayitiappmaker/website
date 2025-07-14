@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 
 export async function POST() {
   try {
-    const { error, data } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email: `godsgiftuko+${Math.random()}@gmail.com`,
       password: "12345678",
       options: {
@@ -15,8 +15,6 @@ export async function POST() {
         },
       },
     });
-
-    console.log({ error, data });
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });

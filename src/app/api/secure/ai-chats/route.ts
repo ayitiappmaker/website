@@ -1,12 +1,20 @@
 import { connectDB } from '@/libs/mongoose';
 import { ChatHistory } from '@/models/chat_history';
 import { getHealthPrompt } from '@/utils/ai_prompts';
+import { getUserId } from '@/utils/request';
 import OpenAI from 'openai';
 import { ChatCompletionMessageParam } from 'openai/resources';
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY!;
 
 export async function GET(request: Request) {
+  await connectDB();
+  const userId = getUserId(request);
+  const history = await ChatHistory.find({ userId }).lean();
+  return Response.json({ status: 'success', data: history });
+}
+
+export async function POST(request: Request) {
   if (!OPENAI_API_KEY) {
     return new Response(
       JSON.stringify({ error: 'OpenAI API key is not configured' }),
@@ -16,11 +24,12 @@ export async function GET(request: Request) {
 
   try {
     await connectDB();
-
-    const { searchParams } = new URL(request.url);
-    const message = searchParams.get('message');
-    const locale = searchParams.get('locale') || 'ht';
-
+    const userId = getUserId(request);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { message, locale } = await request.json() as any;
+    
+    console.log({ message, locale });
+    
     if (!message) {
       return new Response(
         JSON.stringify({ error: 'Message is required' }),
@@ -37,24 +46,17 @@ export async function GET(request: Request) {
     const writer = writable.getWriter();
     const encoder = new TextEncoder();
 
-    
 
-    const history = await ChatHistory.find({});
-    const messages: Array<ChatCompletionMessageParam> = [];
+    const chatHistory = await ChatHistory.find({ userId }).lean();
+    const messages: Array<ChatCompletionMessageParam & { userId: string; locale: string; }> = [];
 
-    for (const chat of history) {
+    for (const chat of chatHistory) {
       messages.push({
         role: chat.role,
         content: chat.content,
+        userId: chat.userId,
+        locale: chat.locale,
       });
-    }
-
-    if (!history.length) {
-      messages.push(
-        { role: 'system', content: getHealthPrompt(locale) },
-        { role: 'user', content: message },
-      );
-      await ChatHistory.insertMany(messages);
     }
 
     // Start the streaming process
@@ -62,7 +64,13 @@ export async function GET(request: Request) {
       try {
         const stream = await openai.chat.completions.create({
           model: 'gpt-4',
-          messages,
+          messages: [
+            { role: 'system', content: "Start conversation with the expression 'I am your AI Doctor'." },
+            { role: 'system', content: getHealthPrompt(locale) },
+            ...messages,
+            { role: 'system', content: `Make sure you reply in ${locale} language` },
+            { role: 'user', content: message },
+          ],
           temperature: 0.7,
           max_tokens: 1000,
           stream: true,
@@ -88,12 +96,12 @@ export async function GET(request: Request) {
           }
         }
 
-        // console.log(messages);
         console.log(aiResponse);
         
+
         await ChatHistory.insertMany([
-          // { role: 'user', content: message },
-          { role: 'system', content: aiResponse }
+          { role: 'user', content: message, userId, locale },
+          { role: 'system', content: aiResponse, userId, locale }
         ]);
 
         // Send completion signal
